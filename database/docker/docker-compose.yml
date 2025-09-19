@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  # PostgreSQL Database Service
+  postgres:
+    image: postgres:15-alpine
+    container_name: card-app-postgres
+    restart: unless-stopped
+
+    environment:
+      # Database Configuration
+      POSTGRES_DB: card-app
+      POSTGRES_USER: card_admin
+      POSTGRES_PASSWORD: dev_password
+    
+    ports:
+      # Map container port 5432 to host port 5432
+      - "5432:5432"
+
+    volumes:
+      # Persistent data storage
+      - postgres_data:/var/lib/postgresql/data
+
+      # Initialize database with schema files
+      - ../schema:/docker-entrypoint-initdb.d
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  card-app-network:
+    driver: bridge
