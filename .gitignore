@@ -36,3 +36,9 @@ logs/
 
 # Kubernetes secrets
 *secret*.yaml
+
+# Environment files with secrets
+.env
+.env.local
+.env.production
+*/.env

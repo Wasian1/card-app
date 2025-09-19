@@ -8,9 +8,9 @@ services:
 
     environment:
       # Database Configuration
-      POSTGRES_DB: card-app
-      POSTGRES_USER: card_admin
-      POSTGRES_PASSWORD: dev_password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     
     ports:
       # Map container port 5432 to host port 5432
