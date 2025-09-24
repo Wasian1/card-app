@@ -20,7 +20,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
       # Initialize database with schema files
-      - database/schema:/docker-entrypoint-initdb.d
+      - ./database/schema:/docker-entrypoint-initdb.d
 
 volumes:
   postgres_data:
