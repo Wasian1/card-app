@@ -47,6 +47,33 @@ origin = os.environ.get('FRONTEND_URL') or 'http://localhost:3000'  # Similar be
 - `undefined`, `null`, `""` (empty string), `0`, `false`, `NaN`
 
 ### 4. Arrow Functions vs Traditional Functions
+
+#### Different Arrow Function Contexts
+
+**Server Startup Callback (server.js) - No Parameters:**
+```javascript
+const server = app.listen(PORT, HOST, () => {     // Empty () = no parameters
+    console.log('🎉 Server Started!');            // Just notification/logging
+});                                               // Runs ONCE at startup
+```
+
+**Route Handler (app.js) - With Parameters:**
+```javascript
+app.get('/api/health', (req, res) => {           // (req, res) = receives request data
+    res.json({status: 'ok'});                    // Must send response back
+});                                               // Runs EVERY request
+```
+
+**Key Differences:**
+| Aspect | Server Callback `()` | Route Handler `(req, res)` |
+|--------|---------------------|---------------------------|
+| **Parameters** | None `()` | Two `(req, res)` |
+| **When runs** | Once at startup | Every HTTP request |
+| **Purpose** | Notify success | Handle requests |
+| **Must return** | Nothing | HTTP response |
+| **Frequency** | One-time | Multiple times |
+
+**Traditional Function Equivalent:**
 ```javascript
 // Arrow function (modern, preferred)
 app.get('/api/health', (req, res) => {
@@ -58,11 +85,30 @@ app.get('/api/health', function(req, res) {
     res.json({status: 'ok'});
 });
 ```
+
 **Python Equivalent:**
 ```python
+# Server startup callback
+def on_server_start():              # No parameters - just notification
+    print("🎉 Server Started!")
+
+# Route handler  
 @app.route('/api/health', methods=['GET'])
-def health_check():
+def health_check():                 # Flask manages request context
     return jsonify({'status': 'ok'})
+```
+
+#### Arrow Function Parameter Patterns
+```javascript
+// No parameters
+setTimeout(() => { console.log('Done!'); }, 1000);
+
+// One parameter (parentheses optional)
+users.map(user => user.name);
+users.map((user) => user.name);     // Parentheses OK but not required
+
+// Multiple parameters (parentheses required)
+app.post('/users', (req, res) => { res.json(req.body); });
 ```
 
 ### 5. Object Literals
@@ -272,8 +318,215 @@ def handle_error(error):
     return jsonify({'error': str(error)}), 500
 ```
 
+## Advanced JavaScript Concepts: Nested Callbacks & Event-Driven Programming
+
+### Understanding Nested Function Arguments in server.js
+
+#### The Three Different Arrow Functions in server.js
+
+**1. Server Startup Callback:**
+```javascript
+const server = app.listen(PORT, HOST, () => {     // Callback for app.listen()
+    console.log('🎉 Server Started!');
+});
+```
+
+**2. Signal Handler Callbacks:**
+```javascript
+process.on('SIGTERM', () => {                     // Callback for process.on()
+    console.log('⏹️  SIGTERM received...');
+    server.close(() => { ... });                  // Nested callback for server.close()
+});
+```
+
+**3. Server Close Callback:**
+```javascript
+server.close(() => {                              // Callback for server.close()
+    console.log('✅ Server closed');
+    process.exit(0);
+});
+```
+
+#### Breaking Down the Nested Structure
+
+**process.on() Function Analysis:**
+```javascript
+process.on('SIGTERM', () => {
+    console.log('⏹️  SIGTERM received...');
+    server.close(() => {
+        console.log('✅ Server closed');
+        process.exit(0);
+    });
+});
+```
+
+**Function Arguments Breakdown:**
+
+**process.on() takes 2 arguments:**
+```javascript
+process.on(
+    'SIGTERM',           // ← Argument 1: String (event name)
+    () => {              // ← Argument 2: Arrow function (callback)
+        // ... code ...
+    }
+);
+```
+
+**The arrow function (Argument 2) contains:**
+```javascript
+() => {
+    console.log('⏹️  SIGTERM received...');    // ← Statement 1
+    server.close(                              // ← Statement 2 (function call)
+        () => {                                // ← server.close()'s argument
+            console.log('✅ Server closed');   
+            process.exit(0);
+        }
+    );
+}
+```
+
+**server.close() also takes 1 argument:**
+```javascript
+server.close(
+    () => {                                    // ← Argument: Another arrow function
+        console.log('✅ Server closed');       // ← Statement 1
+        process.exit(0);                       // ← Statement 2
+    }
+);
+```
+
+#### Visual Function Call Tree
+
+```
+process.on(
+    ┌─ Argument 1: 'SIGTERM'
+    └─ Argument 2: () => {
+           ├─ console.log('⏹️  SIGTERM received...')
+           └─ server.close(
+                  └─ Argument: () => {
+                         ├─ console.log('✅ Server closed')
+                         └─ process.exit(0)
+                     }
+              )
+       }
+)
+```
+
+#### Execution Flow & Data Flow
+
+**Step 1: Registration (Setup)**
+```javascript
+process.on('SIGTERM', callback1)  // Register callback1 for SIGTERM events
+```
+- **No execution yet** - just storing the callback for later
+- **System remembers**: "When SIGTERM comes, call this function"
+
+**Step 2: Signal Received (Trigger)**
+```javascript
+// System sends SIGTERM → Node.js calls callback1
+callback1() // Which is: () => { console.log + server.close() }
+```
+
+**Step 3: Nested Callback (Chain)**
+```javascript
+server.close(callback2)  // Called from within callback1
+// Server finishes closing → Node.js calls callback2
+callback2() // Which is: () => { console.log + process.exit }
+```
+
+**Complete Data Flow Chain:**
+```
+[Ctrl+C pressed] → SIGINT signal → process.on() callback runs
+                                              ↓
+                                        server.close() called
+                                              ↓
+                                   [Server finishes requests]
+                                              ↓
+                                    server.close() callback runs
+                                              ↓
+                                        process.exit(0)
+```
+
+#### Closure and Variable Access
+
+**The server Variable Bridge:**
+```javascript
+const server = app.listen(PORT, HOST, () => {     // Creates server object
+    console.log('Started!');
+});
+
+process.on('SIGTERM', () => {
+    server.close(() => { ... });                  // Uses server from above!
+});
+```
+
+**Critical concept: CLOSURE**
+- **The signal handler** can access the `server` variable
+- **`server`** was created in the outer scope 
+- **Arrow function captures** variables from surrounding scope
+- **Without closure, inner functions couldn't access outer variables**
+
+#### Functions as First-Class Objects
+
+**In JavaScript, functions can be:**
+- ✅ **Stored in variables**: `const myFunc = () => {}`
+- ✅ **Passed as arguments**: `server.close(myFunc)`
+- ✅ **Created inline**: `process.on('event', () => {})`
+- ✅ **Nested inside other functions**: Callback within callback
+
+**Your nested structure example:**
+```javascript
+// Function 1 passed to process.on
+() => {
+    console.log('Signal received');
+    
+    // Function 2 passed to server.close  
+    server.close(() => {
+        console.log('Server closed');
+        process.exit(0);
+    });
+}
+```
+
+#### Python Equivalent Structure
+
+**JavaScript (Nested Callbacks):**
+```javascript
+process.on('SIGTERM', () => {                    # Function with callback
+    console.log('Signal received');
+    server.close(() => {                         # Nested function with callback
+        console.log('Server closed');
+        process.exit(0);
+    });
+});
+```
+
+**Python Equivalent:**
+```python
+def handle_signal():                             # Main callback function
+    print('Signal received')
+    
+    def on_server_closed():                      # Nested callback function
+        print('Server closed')
+        sys.exit(0)
+    
+    server.close(callback=on_server_closed)      # Pass nested function as argument
+
+signal.signal(signal.SIGTERM, handle_signal)    # Register main callback
+```
+
+#### Why This Asynchronous Pattern Matters
+
+**This nested callback pattern handles ASYNCHRONOUS operations:**
+
+1. **`process.on()`** = "When signal arrives, run this function"
+2. **`server.close()`** = "Start closing server, when done, run this function"  
+3. **Nested callbacks** = "Do A, then when A finishes, do B"
+
+**Without callbacks, you couldn't wait for operations to complete gracefully!**
+
 ## Next Steps
-- Create `server.js` to start the Express application
+- Test the completed Express server with npm run dev
 - Test the health check endpoint  
 - Learn about route organization and database connection
 - Implement authentication middleware
@@ -282,4 +535,5 @@ def handle_error(error):
 ✅ JavaScript fundamentals understood  
 ✅ Express middleware vs routes understood  
 ✅ Request flow comprehended  
-⏳ **NEXT**: Create server.js startup file
+✅ Nested callbacks and closures understood  
+⏳ **NEXT**: Test server startup and first API call

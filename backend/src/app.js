@@ -81,14 +81,13 @@ app.get('/api/health', (req, res) => {
 // 404 HANDLER - CATCH ALL UNKNOWN ROUTES
 // ============================================================================
 // This catches ANY request that doesn't match our defined routes above
-// Like a "catch-all" or "default case" - similar to Python's else clause
-// The asterisk (*) means "match everything that hasn't been matched yet"
+// In Express v5, we remove the '*' path and let it catch all unmatched routes
 
-app.use('*', (req, res) => {
+app.use((req, res) => {
     // Send a 404 "Not Found" response with error details
     res.status(404).json({
         success: false,                           // Boolean flag for error status
-        message: `Route ${req.originalUrl} not found`  // Dynamic error message
+        message: `Route ${req.originalUrl} not found`  // Dynamic error message with actual URL
     });
 });
 
@@ -109,3 +108,11 @@ app.use((error, req, res, next) => {
         message: error.message || 'Internal server error'  // Error details or generic message
     });
 });
+
+// ============================================================================
+// EXPORT THE APP
+// ============================================================================
+// Make this app available to other files (like server.js)
+// Similar to Python's if __name__ == '__main__' pattern, but for modules
+
+module.exports = app;
