@@ -15,8 +15,8 @@ A learning-focused hobby project to build a gacha-style K-pop artist card collec
 
 ## Project Phases
 
-### Phase 1: Foundation Setup ⏳ **CURRENT PHASE**
-**Status**: Planning
+### Phase 1: Foundation Setup ✅ **COMPLETED**
+**Status**: Completed
 **Learning Focus**: Project structure, containerization basics, local development environment, cronjob fundamentals
 
 #### Step 1.1: Environment Preparation
@@ -49,8 +49,8 @@ A learning-focused hobby project to build a gacha-style K-pop artist card collec
 - [ ] Create basic scheduled task examples
 - [ ] Test cronjob execution in Docker containers
 
-### Phase 2: Core Game Logic
-**Status**: Pending
+### Phase 2: Core Game Logic ⏳ **CURRENT PHASE**
+**Status**: In Progress - Backend Foundation Setup
 **Learning Focus**: Game mechanics, authentication, business logic, automated pull refresh
 
 #### Step 2.1: User Authentication

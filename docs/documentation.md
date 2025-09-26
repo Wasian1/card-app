@@ -29,11 +29,12 @@ A gacha-style card collection game focused on K-pop artists, built as a learning
 - **HTTP Client**: Axios
 
 #### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Authentication**: JWT tokens with bcrypt password hashing
-- **Database ORM**: Prisma or raw SQL with pg
-- **File Uploads**: Multer (for potential image handling)
+- **Runtime**: Node.js ✅ Setup Complete
+- **Framework**: Express.js ✅ Foundation Complete
+- **Authentication**: JWT tokens with bcrypt password hashing (In Progress)
+- **Database Driver**: Raw SQL with pg ✅ Installed
+- **Security**: helmet, cors ✅ Configured
+- **Development**: nodemon ✅ Setup Complete
 
 #### Database
 - **Primary**: PostgreSQL
