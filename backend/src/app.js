@@ -5,7 +5,10 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
+
+// Load database configuration (this will test connection on startup)
+require('./config/database');
 
 // ============================================================================
 // EXPRESS APPLICATION CREATION
