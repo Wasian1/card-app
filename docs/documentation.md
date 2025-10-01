@@ -350,6 +350,28 @@ Persistent Volumes:
 - Basic metrics collection
 - Error tracking with free tier services
 
+## API Endpoints & Game Mechanics
+
+### Implemented Endpoints
+- **GET /api/health** - Server health check and status
+- **GET /api/artists** - List all K-pop idols (22 artists from database)
+
+### Planned Game Architecture
+Complete gacha card collection game with:
+- **44 Unique Cards**: 22 artists × 2 versions with 5-tier rarity system
+- **Gacha Pull System**: 12-hour cooldowns, weighted randomization
+- **Collection Tracking**: Progress by group, rarity, duplicates
+- **Social Features**: Leaderboards, achievements, trading system
+
+### Route Categories
+1. **Authentication**: User registration, login, profile management
+2. **Discovery**: Browse artists, cards, search and filter options  
+3. **Gacha System**: Pull execution, cooldown management, history
+4. **Collections**: User cards, statistics, wishlist, progress tracking
+5. **Social**: Leaderboards, achievements, trading, comparisons
+
+*See Project Creation Commands/16-gacha-game-api-architecture.md for complete route specifications*
+
 ## Future Enhancements
 
 ### Planned Features
