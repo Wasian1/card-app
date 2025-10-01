@@ -58,6 +58,8 @@ app.use(express.urlencoded({ extended: true })); // extended:true allows nested 
 // Think of routes like Python Flask's @app.route() decorators, but organized in separate files
 // Each route file handles related endpoints (auth routes, user routes, card routes, etc.)
 
+app.use('/api/artists', require('./routes/artists'));  // Artists: /api/artists/*, /api/artists/:id
+//    ↑ Base path               ↑ Import router
 // app.use('/api/auth', require('./routes/auth'));     // Authentication: /api/auth/login, /api/auth/register
 // app.use('/api/users', require('./routes/users'));   // User management: /api/users/profile, /api/users/:id
 // app.use('/api/cards', require('./routes/cards'));   // Card operations: /api/cards/collection, /api/cards/gacha
