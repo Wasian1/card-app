@@ -78,6 +78,61 @@ router.get('/search', async (req, res) => {
 });
 
 // ============================================================================
+// GET /api/artists/group/:groupName - Filter artists by group name
+// ============================================================================
+// This endpoint returns all artists from a specific K-pop group
+// Examples: GET /api/artists/group/BTS, GET /api/artists/group/BLACKPINK
+
+router.get('/group/:groupName', async (req, res) => {
+    try {
+        // Extract group name from URL parameter and clean it
+        const groupName = req.params.groupName.trim();
+        
+        // Validate that group name is provided and not empty
+        if (!groupName || groupName === '') {
+            return res.status(400).json({
+                success: false,
+                message: 'Group name is required',
+                example: 'GET /api/artists/group/BTS'
+            });
+        }
+        
+        // Execute case-insensitive exact match query for group name
+        const result = await db.query(
+            'SELECT * FROM artists WHERE LOWER(group_name) = LOWER($1) ORDER BY name',
+            [groupName]
+        );
+        
+        // Check if any artists were found in this group
+        if (result.rows.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: `No artists found in group "${groupName}"`,
+                suggestion: 'Try groups like: BTS, BLACKPINK, TWICE, or use GET /api/artists to see all groups'
+            });
+        }
+        
+        // Send successful response with group members
+        res.json({
+            success: true,
+            message: `Found ${result.rows.length} artists in ${groupName}`,
+            group: groupName,
+            member_count: result.rows.length,
+            data: result.rows
+        });
+        
+    } catch (error) {
+        // Handle database errors gracefully
+        console.error('Group filter error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch artists by group',
+            error: error.message
+        });
+    }
+});
+
+// ============================================================================
 // GET /api/artists/:id - Get individual K-pop artist by ID
 // ============================================================================  
 // This endpoint returns detailed information for a specific artist

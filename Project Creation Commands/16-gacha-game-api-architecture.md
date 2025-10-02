@@ -36,9 +36,9 @@ GET  /api/users/leaderboard      // Top collectors ranking
 ```javascript
 // Artists & Idol Information
 GET  /api/artists                // ✅ IMPLEMENTED - All 22 K-pop idols
-GET  /api/artists/:id            // 🔄 NEXT - Individual artist details
-GET  /api/artists/group/:name    // Artists by group (BTS, BLACKPINK, etc.)
-GET  /api/artists/search?q=name  // Search artists by name
+GET  /api/artists/:id            // ✅ IMPLEMENTED - Individual artist details
+GET  /api/artists/search?name=query // ✅ IMPLEMENTED - Search artists by name
+GET  /api/artists/group/:name    // 🔄 FUTURE - Artists by group (BTS, BLACKPINK, etc.)
 
 // Card Catalog System  
 GET  /api/cards                  // All possible cards (44 total)
