@@ -62,7 +62,7 @@ app.use('/api/artists', require('./routes/artists'));  // Artists: /api/artists/
 //    ↑ Base path               ↑ Import router
 // app.use('/api/auth', require('./routes/auth'));     // Authentication: /api/auth/login, /api/auth/register
 // app.use('/api/users', require('./routes/users'));   // User management: /api/users/profile, /api/users/:id
-// app.use('/api/cards', require('./routes/cards'));   // Card operations: /api/cards/collection, /api/cards/gacha
+app.use('/api/cards', require('./routes/cards'));   // Card operations: /api/cards/collection, /api/cards/gacha
 // app.use('/api/pulls', require('./routes/pulls'));   // Gacha pulls: /api/pulls/available, /api/pulls/execute
 
 // ============================================================================
