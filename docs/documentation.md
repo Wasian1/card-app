@@ -35,6 +35,8 @@ A gacha-style card collection game focused on K-pop artists, built as a learning
 - **Database Driver**: Raw SQL with pg ✅ Installed
 - **Security**: helmet, cors ✅ Configured
 - **Development**: nodemon ✅ Setup Complete
+- **Testing**: Jest + Supertest ✅ Complete (26 API tests)
+- **API Endpoints**: Artists (4) + Cards (4) ✅ Complete
 
 #### Database
 - **Primary**: PostgreSQL
